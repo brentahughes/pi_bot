@@ -11,7 +11,6 @@ module chassis_front() {
 
 // One quarter of the main chassis base
 module chassis_wheel_base_section() {
-    wall_height = 2;
     full_base_size = [[0,0], [50,0], [50,120], [0,120]];
     wheel_well_size = [[0,0], [20,0], [20,70], [0,70]];
 
@@ -45,7 +44,7 @@ module chassis() {
 
         translate([0,0,base_thickness]) linear_extrude(height=2) difference() {
             projection(cut=true) chassis_base();
-            offset(delta=-2) projection(cut=true) chassis_base();
+            offset(delta=-wall_thickness) projection(cut=true) chassis_base();
         }
     }
 }
