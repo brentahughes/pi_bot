@@ -9,11 +9,11 @@ module pi_standoff() {
         }
 
         // Add in stand off corner supports
-        translate([-2,10,0]) rotate([180,-90,0])
-            linear_extrude(height=4) polygon([[0,0], [0,8], [wall_height+1,8], [0,0]]);
+        translate([-1,10,0]) rotate([180,-90,0])
+            linear_extrude(height=3) polygon([[0,0], [0,8], [wall_height+1,8], [0,0]]);
 
-        translate([-10,-2,0]) rotate([180,-90,90])
-            linear_extrude(height=4) polygon([[0,0], [0,8], [wall_height+1,8], [0,0]]);
+        translate([-10,-1,0]) rotate([180,-90,90])
+            linear_extrude(height=3) polygon([[0,0], [0,8], [wall_height+1,8], [0,0]]);
     }
 }
 
@@ -22,7 +22,7 @@ module pi_mount() {
     hole_inset=3.5; // Distance from corners of plate
 
 
-    translate([wall_thickness, wall_thickness, 0]) difference() {
+    translate([-pi_zero_dim[0]/2, -pi_zero_dim[1]/2, -base_thickness/2 - wall_height/2]) difference() {
         union() {
             linear_extrude(height=base_thickness) {
                 offset(delta=wall_thickness) square(pi_zero_dim);
