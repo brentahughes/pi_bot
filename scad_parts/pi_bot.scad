@@ -1,12 +1,18 @@
 use <utilities.scad>;
 
-include <pi_zero_mount.scad>;
-include <pi_bot_chassis.scad>;
+include <pi_mount.scad>;
+include <chassis.scad>;
 
-$fn=45;
+// Chassis Information
+chassis_size = [160, 70];
 base_thickness = 2;
 wall_thickness = 2;
 wall_height = 2;
+wheel_diameter = 65;
+wheel_well_depth = 10; // Slightly less than the wheel depth
+
+// Curve smoothness
+$fn=45; // This can greatly increase render time
 
 module pi_bot() {
     chassis();
@@ -14,5 +20,6 @@ module pi_bot() {
 }
 
 
-pi_bot();
+// pi_bot();
+chassis();
 // pi_mount();
