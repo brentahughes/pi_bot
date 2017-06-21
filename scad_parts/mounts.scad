@@ -68,19 +68,39 @@ module single_hole_mount(dim, standoff_size, hole_location, brace_count) {
     }
 }
 
+module pi_mount() {
+    basic_mount(pi_zero_dim, pi_zero_standoff_size, pi_zero_hole_inset, 2);
+}
+
+module motor_controller_mount() {
+    basic_mount(motor_controller_dim, motor_controller_standoff_size, motor_controller_hole_inset, 2);
+}
+
 module gearbox_mount(dim) {
     translate([0,0,base_thickness/2 + wall_height/2]) cube([dim[0], dim[1], base_thickness+wall_height], true);
 
-    translate([-20, dim[1]/2, base_thickness+wall_height]) rotate([90,0,0]) {
-        linear_extrude(height=wall_thickness) {
+    translate([-20, dim[1]/2, base_thickness]) rotate([90,0,0]) {
+        linear_extrude(height=wall_height) {
             difference() {
                 hull() {
-                    square([40,1]);
-                    translate([15, dim[2]+2, 0]) square([10,1]);
+                    square([40,wall_height]);
+                    translate([15, dim[2]+wall_height, 0]) square([10,1]);
                 }
 
-                translate([20,2,0]) circle(r=1.5);
+                translate([20,wall_height+2,0]) circle(r=1.5);
                 translate([20,dim[2]-2,0]) circle(r=1.5);
+            }
+        }
+
+        translate([0,0,-wall_height]) linear_extrude(height=wall_height*2) difference() {
+            hull() {
+                square([40,wall_height]);
+                translate([15, dim[2]+wall_height, 0]) square([10,1]);
+            }
+
+            offset(delta=-wall_height) hull() {
+                square([40,1]);
+                translate([15, dim[2]+2, 0]) square([10,1]);
             }
         }
     }
