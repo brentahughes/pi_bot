@@ -1,5 +1,5 @@
 module chassis_base() {
-    angle_box_size = 20;
+    angle_box_size = 15;
 
     difference() {
         square(chassis_size, true);
