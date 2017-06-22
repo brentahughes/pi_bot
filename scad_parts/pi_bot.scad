@@ -52,7 +52,7 @@ module pi_bot() {
 
 // motor_controller_mount();
 pi_bot();
-// gearbox_mount(gear_box_dim);
+// gearbox_mount();
 // basic_mount([20,30], [3,7], 6, 2);
 // chassis();
 // motor_controller_mount();
