@@ -77,32 +77,32 @@ module motor_controller_mount() {
 }
 
 module gearbox_mount() {
-    translate([0,0,base_thickness/2 + wall_height/2])
-        cube([gear_box_dim[0], gear_box_dim[1], base_thickness+wall_height], true);
+    mount_length = 15;
+    mount_width = base_thickness;
+    mount_height = gear_box_dim[2]+wall_height+base_thickness;
+    whole_distance_from_base = 1;
 
-    translate([-20, gear_box_dim[1]/2, 0]) rotate([90,0,0]) {
-        linear_extrude(height=wall_height) {
+    union() {
+        translate([0,0,base_thickness/2 + wall_height/2])
+            cube([gear_box_dim[0], gear_box_dim[1], base_thickness+wall_height], true);
+
+        translate([0, gear_box_dim[1]/2, 0]) {
             difference() {
-                hull() {
-                    square([40,base_thickness+wall_height]);
-                    translate([15, gear_box_dim[2]+wall_height+base_thickness, 0]) square([10,1]);
-                }
+                translate([0,0,mount_height/2]) cube([mount_length, mount_width, mount_height], true);
 
-                translate([20,wall_height+base_thickness+2,0]) circle(r=1.5);
-                translate([20,gear_box_dim[2]-2,0]) circle(r=1.5);
+                translate([0,base_thickness/2,base_thickness + wall_height + gear_box_mount_diameter/2 + whole_distance_from_base])
+                    rotate([90,0,0])
+                        cylinder(r=gear_box_mount_diameter/2, h=base_thickness*3, center=true);
+
+                translate([0,base_thickness/2,mount_height - wall_height - gear_box_mount_diameter/2]) rotate([90,0,0])
+                    cylinder(r=gear_box_mount_diameter/2, h=base_thickness*3, center=true);
             }
         }
 
-        translate([0,0,-wall_height]) linear_extrude(height=wall_height*2) difference() {
-            hull() {
-                square([40,base_thickness+wall_height]);
-                translate([15, gear_box_dim[2]+wall_height+base_thickness, 0]) square([10,1]);
-            }
+        translate([-base_thickness/2 + mount_length/2,gear_box_dim[1]/2 + base_thickness,mount_height/2])
+            cube([base_thickness, wall_height, mount_height], true);
 
-            offset(delta=-wall_height) hull() {
-                square([40,1]);
-                translate([15, gear_box_dim[2]+2, 0]) square([10,1]);
-            }
-        }
+        translate([base_thickness/2 - mount_length/2,gear_box_dim[1]/2 + base_thickness,mount_height/2])
+            cube([base_thickness, wall_height, mount_height], true);
     }
 }

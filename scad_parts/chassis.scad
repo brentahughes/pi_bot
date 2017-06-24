@@ -1,18 +1,13 @@
 module chassis_base() {
-    angle_box_size = 15;
-
     difference() {
         square(chassis_size, true);
 
         union() {
-            translate([chassis_size[0]/2,chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);
-            translate([chassis_size[0]/2,-chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);
+            translate([chassis_size[0]/2,chassis_size[1]/2,0]) rotate([0,0,45]) square(chassis_corner_angle, true);
+            translate([chassis_size[0]/2,-chassis_size[1]/2,0]) rotate([0,0,45]) square(chassis_corner_angle, true);
 
-            translate([-chassis_size[0]/2,chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);
-            translate([-chassis_size[0]/2,-chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);;
-
-            // translate([0,chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);
-            // translate([0,-chassis_size[1]/2,0]) rotate([0,0,45]) square(angle_box_size, true);
+            translate([-chassis_size[0]/2,chassis_size[1]/2,0]) rotate([0,0,45]) square(chassis_corner_angle, true);
+            translate([-chassis_size[0]/2,-chassis_size[1]/2,0]) rotate([0,0,45]) square(chassis_corner_angle, true);
         }
     }
 }
