@@ -131,8 +131,6 @@ module battery_mount() {
     battery_to_edge = (cover_size[1] - battery_dim[1] - wall_thickness*2) / 2;
 
     union() {
-        translate([0,0,base_thickness/2]) cube([cover_size[0], cover_size[1], base_thickness], true);
-
         translate([-(cover_size[0]/2 - battery_dim[0]/2 - wall_thickness),0,0]) {
             linear_extrude(height=base_thickness) {
                 difference() {

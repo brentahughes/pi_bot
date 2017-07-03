@@ -1,17 +1,17 @@
-include <mounts.scad>;
 include <chassis.scad>;
+include <mounts.scad>;
 
 /////////////////////////
 // CUSTOMIZABLE THINGS //
 /////////////////////////
 
 // Global information
-base_thickness = 2;
-wall_thickness = 2;
-wall_height = 3;
+base_thickness = 3; // Default: 3
+wall_thickness = 2; // Default: 2
+wall_height = 3; // Default: 3
 
 // Chassis information
-chassis_size = [170, 100];
+chassis_size = [170, 105];
 chassis_corner_angle = 15;
 
 // Motor and gearbox information
@@ -48,7 +48,7 @@ $fn=45; // This can greatly increase render time
 ////////////////////////////////////////////
 
 // Standoff information
-level_one_height = tallest_component_height + wall_height*2 + ir_proximity_height + 5;
+level_one_height = tallest_component_height + wall_height*2 + ir_proximity_height;
 
 // Get the hood size based on the chassis size.
 cover_size = [chassis_size[0] - 5, chassis_size[1] - 20];
@@ -76,13 +76,15 @@ module bottom_plate() {
             chassis_bottom();
 
             // Add the pi mount and move to the side slightly to make room for usb cables.
-            translate([0,motor_controller_dim[1]/2 - pi_zero_dim[1]/2,0]) pi_mount();
+            translate([
+                chassis_size[0]/2 - pi_zero_dim[0]/2 - wall_thickness,
+                -(motor_controller_dim[1]/2 - pi_zero_dim[1]/2),
+                0
+            ])
+                pi_mount();
 
-            // Add the motor controller mounts
-            motor_controller_translate = [chassis_size[0]/2-motor_controller_dim[0]/2-wall_thickness,0,0];
-            for (i = [-1,1]) {
-                translate(i*motor_controller_translate) motor_controller_mount();
-            }
+            // Add the motor controller mount
+            translate([-(chassis_size[0]/2-motor_controller_dim[0]/2-wall_thickness),0,0]) motor_controller_mount();
 
             // Add in the motor mounts
             x_gear_box_translate = chassis_size[0]/2 - gear_box_dim[0]/2 - chassis_corner_angle/2 - wall_thickness * 3;
@@ -179,7 +181,8 @@ module pi_bot() {
         translate([0,-standoff_translate[1],base_thickness]) plate_standoff(level_one_height);
         translate([0,standoff_translate[1],base_thickness]) plate_standoff(level_one_height);
 
-        translate([0,0,level_one_height+base_thickness]) rotate([180, 0, 0]) middle_plate();
+        translate([0,0,level_one_height+base_thickness*2]) rotate([180, 0, 0]) middle_plate();
+        translate([0,0,level_one_height+base_thickness*2]) top_plate();
     }
 }
 
@@ -187,8 +190,8 @@ module pi_bot() {
 // motor_controller_mount();
 // middle_plate();
 // top_plate();
-battery_mount();
+// battery_mount();
 // ir_sensor_mount();
-// bottom_plate();
+bottom_plate();
 // gearbox_mount();
 // plate_standoff(level_one_height);
