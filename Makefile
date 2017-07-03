@@ -10,7 +10,7 @@ remote_debug: build remote_kill upload remote_run
 
 upload:
 	chmod +x $(APP_NAME)
-	scp $(APP_NAME) $(SSH_BASE_CMD):$(PI_PATH)$(APP_NAME)
+	scp $(APP_NAME) settings.yaml $(SSH_BASE_CMD):$(PI_PATH)
 
 remote_run:
 	ssh $(SSH_BASE_CMD) sudo $(PI_PATH)$(APP_NAME)

@@ -25,5 +25,5 @@ func main() {
 	go handleCtrlC(c)
 
 	fmt.Println("Starting pi_bot")
-	pibot.Start()
+	pibot.Start("demo")
 }

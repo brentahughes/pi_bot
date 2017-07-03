@@ -1,33 +1,65 @@
 package pibot
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
-	"fmt"
-
 	"github.com/kidoman/embd"
+	"github.com/spf13/viper"
 )
 
-var pins Pins
+var gpioPins pins
+var motorLeftPins [2]int
+var motorRightPins [2]int
 
-type Pins struct {
+type pins struct {
 	left1, left2, right1, right2 embd.DigitalPin
 }
 
-func Start() {
+// Start runs the pibot in the diseried mode. This includes setting up the gpio pins.
+func Start(mode string) {
 	embd.InitGPIO()
 	defer embd.CloseGPIO()
 
+	loadConfiguration()
+
 	setupPins()
-	setPinDirection()
-	runDemo()
+
+	switch mode {
+	case "demo":
+		runDemo()
+	default:
+		fmt.Printf("PiBot mode %s unknown.\n", mode)
+	}
 }
 
+// Stop sets all pins to low to stop the motors. Used during a SIGTERM
 func Stop() {
-	pins.left1.Write(embd.Low)
-	pins.left2.Write(embd.Low)
-	pins.right1.Write(embd.Low)
-	pins.right2.Write(embd.Low)
+	gpioPins.left1.Write(embd.Low)
+	gpioPins.left2.Write(embd.Low)
+	gpioPins.right1.Write(embd.Low)
+	gpioPins.right2.Write(embd.Low)
+}
+
+func loadConfiguration() {
+	viper.SetConfigName("settings")
+	viper.AddConfigPath(".")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error with config file: %s", err))
+	}
+
+	for i, value := range viper.GetStringSlice("motors.left.pins") {
+		pin, _ := strconv.Atoi(value)
+		motorLeftPins[i] = pin
+	}
+
+	for i, value := range viper.GetStringSlice("motors.right.pins") {
+		pin, _ := strconv.Atoi(value)
+		motorRightPins[i] = pin
+	}
 }
 
 func setupPins() {
@@ -35,49 +67,47 @@ func setupPins() {
 
 	var err error
 
-	pins.left1, err = embd.NewDigitalPin(6)
+	gpioPins.left1, err = embd.NewDigitalPin(motorLeftPins[0])
 	if err != nil {
 		panic(err)
 	}
 
-	pins.left2, err = embd.NewDigitalPin(13)
+	gpioPins.left2, err = embd.NewDigitalPin(motorLeftPins[1])
 	if err != nil {
 		panic(err)
 	}
 
-	pins.right1, err = embd.NewDigitalPin(19)
+	gpioPins.right1, err = embd.NewDigitalPin(motorRightPins[0])
 	if err != nil {
 		panic(err)
 	}
 
-	pins.right2, err = embd.NewDigitalPin(26)
+	gpioPins.right2, err = embd.NewDigitalPin(motorRightPins[1])
 	if err != nil {
 		panic(err)
 	}
-}
 
-func setPinDirection() {
-	pins.left1.SetDirection(embd.Out)
-	pins.left2.SetDirection(embd.Out)
-	pins.right1.SetDirection(embd.Out)
-	pins.right2.SetDirection(embd.Out)
+	gpioPins.left1.SetDirection(embd.Out)
+	gpioPins.left2.SetDirection(embd.Out)
+	gpioPins.right1.SetDirection(embd.Out)
+	gpioPins.right2.SetDirection(embd.Out)
 }
 
 func runDemo() {
 	fmt.Println("Starting demo")
 
 	for {
-		pins.left1.Write(embd.High)
-		pins.left2.Write(embd.Low)
-		pins.right1.Write(embd.High)
-		pins.right2.Write(embd.Low)
+		gpioPins.left1.Write(embd.High)
+		gpioPins.left2.Write(embd.Low)
+		gpioPins.right1.Write(embd.High)
+		gpioPins.right2.Write(embd.Low)
 
 		time.Sleep(2 * time.Second)
 
-		pins.left1.Write(embd.Low)
-		pins.left2.Write(embd.High)
-		pins.right1.Write(embd.Low)
-		pins.right2.Write(embd.High)
+		gpioPins.left1.Write(embd.Low)
+		gpioPins.left2.Write(embd.High)
+		gpioPins.right1.Write(embd.Low)
+		gpioPins.right2.Write(embd.High)
 
 		time.Sleep(2 * time.Second)
 	}

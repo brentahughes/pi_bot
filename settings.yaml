@@ -1,0 +1,5 @@
+motors:
+  left:
+    pins: [6,13]
+  right:
+    pins: [19,26]
