@@ -43,14 +43,6 @@ func Stop() {
 }
 
 func loadConfiguration() {
-	viper.SetConfigName("settings")
-	viper.AddConfigPath(".")
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("fatal error with config file: %s", err))
-	}
-
 	for i, value := range viper.GetStringSlice("motors.left.pins") {
 		pin, _ := strconv.Atoi(value)
 		motorLeftPins[i] = pin

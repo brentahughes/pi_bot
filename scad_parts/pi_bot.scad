@@ -62,7 +62,7 @@ module plate_standoff(height) {
     inner_hole_depth = max(height / 5, 12);
 
     difference() {
-        cylinder(d=6, h=height, $fn=6);
+        cylinder(d=7, h=height, $fn=6);
         cylinder(d=3, h=inner_hole_depth, $fn=45);
         translate([0,0,height - inner_hole_depth]) cylinder(d=3, h=inner_hole_depth);
     }

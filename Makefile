@@ -2,7 +2,7 @@ APP_NAME := pi_bot
 HTTP_PORT := 8888
 PI_USER := pi
 PI_ADDR := 192.168.1.199
-PI_PATH := /home/pi/
+PI_PATH := /home/pi/pibot/
 
 SSH_BASE_CMD = $(PI_USER)@$(PI_ADDR)
 
@@ -10,10 +10,10 @@ remote_debug: build remote_kill upload remote_run
 
 upload:
 	chmod +x $(APP_NAME)
-	scp $(APP_NAME) settings.yaml $(SSH_BASE_CMD):$(PI_PATH)
+	rsync -avze ssh $(APP_NAME) settings.yaml resources $(SSH_BASE_CMD):$(PI_PATH)
 
 remote_run:
-	ssh $(SSH_BASE_CMD) sudo $(PI_PATH)$(APP_NAME)
+	ssh $(SSH_BASE_CMD) "cd $(PI_PATH) && sudo ./$(APP_NAME)"
 
 remote_kill:
 	-ssh $(SSH_BASE_CMD) sudo killall $(APP_NAME)
