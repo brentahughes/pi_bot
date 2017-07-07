@@ -20,7 +20,9 @@ func Start() {
 
 // @see dashboard.go
 func registerDashboard(r *mux.Router) {
-	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/", overviewHandler)
+	r.HandleFunc("/control", controlHandler)
+	r.HandleFunc("/settings", settingsHandler)
 
 	// Setup file server for html resources
 	s := http.StripPrefix("/content/", http.FileServer(http.Dir("./resources/web_content/")))
@@ -31,5 +33,6 @@ func registerDashboard(r *mux.Router) {
 // @see api.go
 func registerAPI(r *mux.Router) {
 	sr := r.PathPrefix("/api").Subrouter()
+
 	sr.HandleFunc("/", apiHandler)
 }

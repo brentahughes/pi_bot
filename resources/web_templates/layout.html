@@ -1,3 +1,5 @@
+{{ define "layout" }}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,8 +11,6 @@
         <title>{{.Title}} v{{.Version}}</title>
 
         <link rel="stylesheet" href="/content/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/content/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="/content/css/font-awesome.min.css">
         <link rel="stylesheet" href="/content/css/dashboard.css">
     </head>
     <body>
@@ -32,6 +32,15 @@
                     </a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right navbar-hidden">
+                        <li><a href="/">Overview</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right navbar-hidden">
+                        <li><a href="/control">Control</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right navbar-hidden">
+                        <li><a href="/settings">Settings</a></li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="https://github.com/bah2830/pi_bot" target="_blank">View On Github</a></li>
                     </ul>
@@ -43,26 +52,31 @@
             <div class="row">
                 <div class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
-                        <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+                         <li {{if eq .ControllerMethod "overview"}}class="active"{{end}}>
+                            <a href="/" class="sidebar_link" id="overview_link">Overview</a>
+                        </li>
                     </ul>
                      <ul class="nav nav-sidebar">
-                        <li><a href="#">Control</a></li>
-                        <li><a href="#">Settings</a></li>
+                        <li {{if eq .ControllerMethod "control"}}class="active"{{end}}>
+                            <a href="/control" class="sidebar_link" id="control_link">Control</a>
+                        </li>
+
+                        <li {{if eq .ControllerMethod "settings"}}class="active"{{end}}>
+                            <a href="/settings" class="sidebar_link" id="settings_link">Settings</a>
+                        </li>
                     </ul>
                 </div>
-                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                    <h1 class="page-header">{{.Title}}</h1>
-                    <p>{{.PageDetails.Content}}</p>
 
-                    <button type="button" class="btn btn-lg btn-primary">Start Demo</button>
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    {{ template "content" . }}
                 </div>
             </div>
         </div>
 
-        <!-- Bootstrap core JavaScript
-        ================================================== -->
         <script src="/content/js/jquery-3.2.1.min.js"></script>
-        <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
         <script src="/content/js/bootstrap.min.js"></script>
+        <script src="/content/js/dashboard.js"></script>
     </body>
 </html>
+
+{{ end }}
