@@ -1,7 +1,48 @@
 {{ define "content" }}
 
-<h1>{{.Title}}</h1>
+<style>
+    .info-name {
+        font-weight: bold;
+    }
+</style>
 
-<button type="button" id="overview_start_demo" class="btn btn-lg btn-primary">Start Demo</button>
+<h2>Overview</h2>
+
+<div class="container-fluid">
+    <h3>Host Info</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <span class="info-name">Hostname:</span>
+            <span id="overview_hostname">&nbsp;</span>
+        </div>
+        <div class="col-md-4">
+            <span class="info-name">OS:</span>
+            <span id="overview_os">&nbsp;</span>
+        </div>
+        <div class="col-md-4">
+            <span class="info-name">Uptime:</span>
+            <span id="overview_uptime">&nbsp;</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <span class="info-name">Load:</span>
+            <span id="overview_load">&nbsp;</span>
+        </div>
+        <div class="col-md-4">
+            <span class="info-name">Memory:</span>
+            <span id="overview_memory">&nbsp;</span>
+        </div>
+        <div class="col-md-4">
+            <span class="info-name">Processor:</span>
+            <span id="overview_processor">&nbsp;</span>
+        </div>
+    </div>
+    <hr>
+</div>
+
+<div class="container-fluid">
+    <h3>Bot Info</h3>
+</div>
 
 {{ end }}

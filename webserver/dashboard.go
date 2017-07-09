@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 )
 
@@ -15,6 +16,17 @@ type page struct {
 	Favicon          string
 	ControllerMethod string
 	Data             interface{}
+}
+
+func registerDashboard(r *mux.Router) {
+	r.HandleFunc("/", overviewHandler)
+	r.HandleFunc("/control", controlHandler)
+	r.HandleFunc("/settings", settingsHandler)
+
+	// Setup file server for html resources
+	s := http.StripPrefix("/content/", http.FileServer(http.Dir("./resources/web_content/")))
+	r.PathPrefix("/content/").Handler(s)
+	http.Handle("/", r)
 }
 
 func getDefaultPageData(controllerMethod string) page {

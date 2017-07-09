@@ -10,14 +10,15 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-var info Info
+// HostInfo is a collection of information about the host and it's resources
+var HostInfo Info
 
 // Info contains all host resource information
 type Info struct {
-	Host          *botHost.InfoStat
-	CPU           []cpu.InfoStat
-	VirtualMemory *mem.VirtualMemoryStat
-	Load          *load.AvgStat
+	Host       *botHost.InfoStat      `json:"host"`
+	Processors []cpu.InfoStat         `json:"processors"`
+	Memory     *mem.VirtualMemoryStat `json:"memory"`
+	Load       *load.AvgStat          `json:"load"`
 }
 
 // GetInfo will return the pre populated Info struct.
@@ -27,7 +28,7 @@ func GetInfo(refresh bool) Info {
 		return GetHostInfo()
 	}
 
-	return info
+	return HostInfo
 }
 
 // StartHostPoller will refresh the cache for host details
@@ -48,7 +49,7 @@ func GetHostInfo() Info {
 		log.Fatalf("Error getting host details: %s", err.Error())
 	}
 
-	VirtualMemory, err := mem.VirtualMemory()
+	memory, err := mem.VirtualMemory()
 	if err != nil {
 		log.Fatalf("Error getting host memory details. %s", err.Error())
 	}
@@ -58,17 +59,22 @@ func GetHostInfo() Info {
 		log.Fatalf("Error getting cpu details. %s", err.Error())
 	}
 
+	// Flags is a large list of strings that is not needed. Remove them
+	for i := range cpuDetails {
+		cpuDetails[i].Flags = nil
+	}
+
 	loadDetails, err := load.Avg()
 	if err != nil {
 		log.Fatalf("Error getting system load details. %s", err.Error())
 	}
 
-	info = Info{
-		Host:          hostDetails,
-		CPU:           cpuDetails,
-		VirtualMemory: VirtualMemory,
-		Load:          loadDetails,
+	HostInfo = Info{
+		Host:       hostDetails,
+		Processors: cpuDetails,
+		Memory:     memory,
+		Load:       loadDetails,
 	}
 
-	return info
+	return HostInfo
 }
