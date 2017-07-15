@@ -1,4 +1,4 @@
-package database
+package pibot
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ type Client struct {
 	bucket     string
 }
 
-// GetClient returns a open bolt connection and client instance
-func GetClient() *Client {
+// GetDatabaseClient returns a open bolt connection and client instance
+func GetDatabaseClient() *Client {
 	return &Client{}
 }
 

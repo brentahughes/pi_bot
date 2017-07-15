@@ -1,14 +1,14 @@
-package webserver
+package pibot
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/bah2830/pi_bot/host"
 	"github.com/gorilla/mux"
 )
 
-func registerAPI(r *mux.Router) {
+// RegisterAPI sets up the routes for the api
+func RegisterAPI(r *mux.Router) {
 	sr := r.PathPrefix("/api").Subrouter().StrictSlash(true)
 
 	// Handle invalid paths
@@ -24,6 +24,10 @@ func registerAPI(r *mux.Router) {
 	// Host
 	sr.Handle("/host", setupAPICall(http.HandlerFunc(hostHandler))).Methods("GET")
 	sr.Handle("/host", setupAPICall(http.HandlerFunc(notAllowed))).Methods("POST", "PUT", "PATCH", "DELETE")
+
+	// Settings
+	sr.Handle("/settings", setupAPICall(http.HandlerFunc(apiSettingsHandler))).Methods("GET")
+	sr.Handle("/settings", setupAPICall(http.HandlerFunc(notAllowed))).Methods("POST", "PUT", "PATCH", "DELETE")
 
 }
 
@@ -44,9 +48,20 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func hostHandler(w http.ResponseWriter, r *http.Request) {
-	hostInfo := host.HostInfo
+	hostInfo := HostInfo
 
 	outgoingJSON, err := json.Marshal(hostInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(outgoingJSON)
+}
+
+func apiSettingsHandler(w http.ResponseWriter, r *http.Request) {
+	settings := GetSettings()
+	outgoingJSON, err := json.Marshal(settings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

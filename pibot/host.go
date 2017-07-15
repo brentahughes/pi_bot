@@ -1,11 +1,11 @@
-package host
+package pibot
 
 import (
 	"log"
 	"time"
 
 	"github.com/shirou/gopsutil/cpu"
-	botHost "github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 )
@@ -15,7 +15,7 @@ var HostInfo Info
 
 // Info contains all host resource information
 type Info struct {
-	Host       *botHost.InfoStat      `json:"host"`
+	Host       *host.InfoStat         `json:"host"`
 	Processors []cpu.InfoStat         `json:"processors"`
 	Memory     *mem.VirtualMemoryStat `json:"memory"`
 	Load       *load.AvgStat          `json:"load"`
@@ -44,7 +44,7 @@ func StartHostPoller() {
 
 // GetHostInfo returns a struct of host information
 func GetHostInfo() Info {
-	hostDetails, err := botHost.Info()
+	hostDetails, err := host.Info()
 	if err != nil {
 		log.Fatalf("Error getting host details: %s", err.Error())
 	}

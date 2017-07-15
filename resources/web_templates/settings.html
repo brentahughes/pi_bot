@@ -6,21 +6,20 @@
     }
 
     .settings-input-pin {
-        width: 80px;
+        width: 60px;
     }
 
     .table > tbody > tr > td {
         border: 0;
     }
 
+    .table > tbody > tr:hover {
+        background-color: #ddefff;
+    }
+
     .table-motor-settings > tbody > tr > td:last-child,
     .table-motor-settings > tbody > tr > td:nth-last-child(2) {
         width: 90px;
-    }
-
-    .table-motor-settings > tbody > tr:first-child > td {
-        font-size: 12px;
-        color: #777;
     }
 </style>
 
@@ -45,74 +44,68 @@
             </div>
 
             <div class="row">
-                <h3>Motors</h3>
+                <h3>Motor GPIO Pins</h3>
                 <hr>
 
                 <table class="table table-motor-settings">
                     <tbody>
                         <tr>
-                            <td>&nbsp;</td>
-                            <td align="center">Pin 1</td>
-                            <td align="center">Pin 2</td>
-                        </tr>
-                        <tr>
                             <td>Right</td>
                             <td align="center">
                                 <input type="number" class="form-control settings-input-pin" name="motor_left_1"
-                                    placeholder="Pin #1" required value="{{.Data.MotorLeft1}}">
+                                    required value="{{index .Data.MotorLeft 0}}">
                             </td>
                             <td align="center">
                                 <input type="number" class="form-control settings-input-pin" name="motor_left_2"
-                                    placeholder="Pin #2" required value="{{.Data.MotorLeft2}}">
+                                    required value="{{index .Data.MotorLeft 1}}">
                             </td>
                         </tr>
                         <tr>
                             <td>Left</td>
                             <td align="center">
                                 <input type="number" class="form-control settings-input-pin" name="motor_right_1"
-                                placeholder="Pin #2" required value="{{.Data.MotorRight1}}">
+                                required value="{{index .Data.MotorRight 0}}">
                             </td>
                             <td align="center">
                                 <input type="number" class="form-control settings-input-pin" name="motor_right_2"
-                                    placeholder="Pin #2" required value="{{.Data.MotorRight2}}">
+                                    required value="{{index .Data.MotorRight 1}}">
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- <div class="row">
-                <h3>Sensors</h3>
+             <div class="row">
+                <h3>Sensor GPIO Pins</h3>
                 <hr>
 
                 <table class="table table-motor-settings">
                     <tbody>
                         <tr>
-                            <td>&nbsp;</td>
-                            <td align="center">Pin 1</td>
-                            <td align="center">Pin 2</td>
-                        </tr>
-                        <tr>
                             <td>Front</td>
                             <td align="center">
-                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #1" required >
+                                <input type="number" class="form-control settings-input-pin" name="sensor_front_1"
+                                    required value="{{index .Data.SensorFront 0}}">
                             </td>
                             <td align="center">
-                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                                <input type="number" class="form-control settings-input-pin" name="sensor_front_2"
+                                    required value="{{index .Data.SensorFront 1}}">
                             </td>
                         </tr>
                         <tr>
                             <td>Back</td>
                             <td align="center">
-                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                                <input type="number" class="form-control settings-input-pin" name="sensor_back_1"
+                                    required value="{{index .Data.SensorBack 0}}">
                             </td>
                             <td align="center">
-                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                                <input type="number" class="form-control settings-input-pin" name="sensor_back_2"
+                                    required value="{{index .Data.SensorBack 1}}">
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div> -->
+            </div>
 
             <input type="submit" class="btn btn-lg btn-success" value="Save">
         </form>

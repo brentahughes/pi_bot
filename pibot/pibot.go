@@ -2,10 +2,14 @@ package pibot
 
 import (
 	"fmt"
-	"time"
+	"net"
 
 	"github.com/kidoman/embd"
+	_ "github.com/kidoman/embd/host/rpi" // Setup for the raspberry pi
 )
+
+// Version is the global verison of the software
+var Version = "0.1-pre-alpha"
 
 var gpioPins pins
 var motorLeftPins [2]int
@@ -15,86 +19,34 @@ type pins struct {
 	left1, left2, right1, right2 embd.DigitalPin
 }
 
-// Start runs the pibot in the diseried mode. This includes setting up the gpio pins.
-func Start(mode string) {
-	embd.InitGPIO()
-	defer embd.CloseGPIO()
+// Start runs the main application
+func Start() {
+	fmt.Println("Starting pi_bot")
 
-	loadConfiguration()
+	StartHostPoller()
 
-	setupPins()
+	// StartBot("demo")
 
-	switch mode {
-	case "demo":
-		runDemo()
-	default:
-		fmt.Printf("PiBot mode %s unknown.\n", mode)
-	}
+	printStartupDetails()
+	StartWebServer()
 }
 
-// Stop sets all pins to low to stop the motors. Used during a SIGTERM
+// Stop shuts down any open channels
 func Stop() {
-	gpioPins.left1.Write(embd.Low)
-	gpioPins.left2.Write(embd.Low)
-	gpioPins.right1.Write(embd.Low)
-	gpioPins.right2.Write(embd.Low)
+	fmt.Println("Shutting down pi_bot")
 }
 
-func loadConfiguration() {
+func printStartupDetails() {
 	s := GetSettings()
-	motorLeftPins[0] = s.MotorLeft1
-	motorLeftPins[1] = s.MotorLeft2
-	motorRightPins[0] = s.MotorRight1
-	motorRightPins[1] = s.MotorRight2
-}
-
-func setupPins() {
-	fmt.Println("Setting up pins for motor control")
-
-	var err error
-
-	gpioPins.left1, err = embd.NewDigitalPin(motorLeftPins[0])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.left2, err = embd.NewDigitalPin(motorLeftPins[1])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.right1, err = embd.NewDigitalPin(motorRightPins[0])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.right2, err = embd.NewDigitalPin(motorRightPins[1])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.left1.SetDirection(embd.Out)
-	gpioPins.left2.SetDirection(embd.Out)
-	gpioPins.right1.SetDirection(embd.Out)
-	gpioPins.right2.SetDirection(embd.Out)
-}
-
-func runDemo() {
-	fmt.Println("Starting demo")
-
-	for {
-		gpioPins.left1.Write(embd.High)
-		gpioPins.left2.Write(embd.Low)
-		gpioPins.right1.Write(embd.High)
-		gpioPins.right2.Write(embd.Low)
-
-		time.Sleep(2 * time.Second)
-
-		gpioPins.left1.Write(embd.Low)
-		gpioPins.left2.Write(embd.High)
-		gpioPins.right1.Write(embd.Low)
-		gpioPins.right2.Write(embd.High)
-
-		time.Sleep(2 * time.Second)
+	addrs, err := net.InterfaceAddrs()
+	if err == nil {
+		for _, a := range addrs {
+			if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+				if ipnet.IP.To4() != nil {
+					fmt.Printf("Available at http://%s:%d\n", ipnet.IP.String(), s.HTTPPort)
+					return
+				}
+			}
+		}
 	}
 }

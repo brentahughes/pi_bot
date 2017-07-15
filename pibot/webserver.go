@@ -1,11 +1,12 @@
-package webserver
+package pibot
 
 import (
+	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/bah2830/pi_bot/pibot"
 	"github.com/gorilla/mux"
 )
 
@@ -17,6 +18,17 @@ type page struct {
 	Favicon          string
 	ControllerMethod string
 	Data             interface{}
+}
+
+// StartWebServer serves the main web endpoints
+func StartWebServer() {
+	r := mux.NewRouter()
+	registerDashboard(r)
+	RegisterAPI(r)
+
+	s := GetSettings()
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", s.HTTPPort), r))
 }
 
 func registerDashboard(r *mux.Router) {
@@ -33,7 +45,7 @@ func registerDashboard(r *mux.Router) {
 func getDefaultPageData(controllerMethod string) page {
 	return page{
 		Title:            "PiBot",
-		Version:          "0.1-pre-alpha",
+		Version:          Version,
 		Favicon:          "/content/img/favicon.png",
 		ControllerMethod: controllerMethod,
 	}
@@ -63,19 +75,23 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		ml2, _ := strconv.Atoi(r.FormValue("motor_left_2"))
 		mr1, _ := strconv.Atoi(r.FormValue("motor_right_1"))
 		mr2, _ := strconv.Atoi(r.FormValue("motor_right_2"))
+		sf1, _ := strconv.Atoi(r.FormValue("sensor_front_1"))
+		sf2, _ := strconv.Atoi(r.FormValue("sensor_front_2"))
+		sb1, _ := strconv.Atoi(r.FormValue("sensor_back_1"))
+		sb2, _ := strconv.Atoi(r.FormValue("sensor_back_2"))
 
-		settings := pibot.Settings{
+		settings := Settings{
 			HTTPPort:    port,
-			MotorLeft1:  ml1,
-			MotorLeft2:  ml2,
-			MotorRight1: mr1,
-			MotorRight2: mr2,
+			MotorLeft:   [2]int{ml1, ml2},
+			MotorRight:  [2]int{mr1, mr2},
+			SensorFront: [2]int{sf1, sf2},
+			SensorBack:  [2]int{sb1, sb2},
 		}
 
 		settings.Save()
 	}
 
-	settings := pibot.GetSettings()
+	settings := GetSettings()
 	p.Data = settings
 
 	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"settings.html"))
