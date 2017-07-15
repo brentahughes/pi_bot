@@ -2,11 +2,9 @@ package pibot
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/kidoman/embd"
-	"github.com/spf13/viper"
 )
 
 var gpioPins pins
@@ -43,15 +41,11 @@ func Stop() {
 }
 
 func loadConfiguration() {
-	for i, value := range viper.GetStringSlice("motors.left.pins") {
-		pin, _ := strconv.Atoi(value)
-		motorLeftPins[i] = pin
-	}
-
-	for i, value := range viper.GetStringSlice("motors.right.pins") {
-		pin, _ := strconv.Atoi(value)
-		motorRightPins[i] = pin
-	}
+	s := GetSettings()
+	motorLeftPins[0] = s.MotorLeft1
+	motorLeftPins[1] = s.MotorLeft2
+	motorRightPins[0] = s.MotorRight1
+	motorRightPins[1] = s.MotorRight2
 }
 
 func setupPins() {

@@ -1,9 +1,0 @@
-pibot:
-  version: 0.1-pre-alpha
-http:
-  port: 8888
-motors:
-  left:
-    pins: [6,13]
-  right:
-    pins: [19,26]

@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/bah2830/pi_bot/pibot"
 	"github.com/gorilla/mux"
-	"github.com/spf13/viper"
 )
 
 // Start serves the main web endpoints
@@ -15,5 +15,7 @@ func Start() {
 	registerDashboard(r)
 	registerAPI(r)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("http.port")), r))
+	s := pibot.GetSettings()
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", s.HTTPPort), r))
 }

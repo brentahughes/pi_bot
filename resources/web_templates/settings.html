@@ -1,5 +1,123 @@
 {{ define "content" }}
 
-<h1>Settings</h1>
+<style>
+    .settings-input-port {
+        width: 100px;
+    }
+
+    .settings-input-pin {
+        width: 80px;
+    }
+
+    .table > tbody > tr > td {
+        border: 0;
+    }
+
+    .table-motor-settings > tbody > tr > td:last-child,
+    .table-motor-settings > tbody > tr > td:nth-last-child(2) {
+        width: 90px;
+    }
+
+    .table-motor-settings > tbody > tr:first-child > td {
+        font-size: 12px;
+        color: #777;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="col-md-8 col-sm-12">
+        <form class="form-settings" action="/settings" method="POST">
+            <div class="row">
+                <h3>Web Server</h3>
+                <hr>
+
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>HTTP Port</td>
+                            <td align="right">
+                                <input type="number" class="form-control settings-input-port" name="http_port"
+                                    placeholder="Port" required value="{{.Data.HTTPPort}}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <h3>Motors</h3>
+                <hr>
+
+                <table class="table table-motor-settings">
+                    <tbody>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="center">Pin 1</td>
+                            <td align="center">Pin 2</td>
+                        </tr>
+                        <tr>
+                            <td>Right</td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" name="motor_left_1"
+                                    placeholder="Pin #1" required value="{{.Data.MotorLeft1}}">
+                            </td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" name="motor_left_2"
+                                    placeholder="Pin #2" required value="{{.Data.MotorLeft2}}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Left</td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" name="motor_right_1"
+                                placeholder="Pin #2" required value="{{.Data.MotorRight1}}">
+                            </td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" name="motor_right_2"
+                                    placeholder="Pin #2" required value="{{.Data.MotorRight2}}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- <div class="row">
+                <h3>Sensors</h3>
+                <hr>
+
+                <table class="table table-motor-settings">
+                    <tbody>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td align="center">Pin 1</td>
+                            <td align="center">Pin 2</td>
+                        </tr>
+                        <tr>
+                            <td>Front</td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #1" required >
+                            </td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Back</td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                            </td>
+                            <td align="center">
+                                <input type="number" class="form-control settings-input-pin" placeholder="Pin #2" required >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> -->
+
+            <input type="submit" class="btn btn-lg btn-success" value="Save">
+        </form>
+    </div>
+    <div class="col-md-4">&nbsp;</div>
+</div>
 
 {{ end }}

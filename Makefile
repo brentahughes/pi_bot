@@ -10,7 +10,7 @@ remote_debug: build remote_kill upload remote_run
 
 upload:
 	chmod +x $(APP_NAME)
-	rsync -avze ssh $(APP_NAME) settings.yaml resources $(SSH_BASE_CMD):$(PI_PATH)
+	rsync -avze ssh $(APP_NAME) resources $(SSH_BASE_CMD):$(PI_PATH)
 
 remote_run:
 	ssh $(SSH_BASE_CMD) "cd $(PI_PATH) && sudo ./$(APP_NAME)"

@@ -3,9 +3,10 @@ package webserver
 import (
 	"html/template"
 	"net/http"
+	"strconv"
 
+	"github.com/bah2830/pi_bot/pibot"
 	"github.com/gorilla/mux"
-	"github.com/spf13/viper"
 )
 
 var templatePath = "resources/web_templates/"
@@ -32,7 +33,7 @@ func registerDashboard(r *mux.Router) {
 func getDefaultPageData(controllerMethod string) page {
 	return page{
 		Title:            "PiBot",
-		Version:          viper.GetString("pibot.version"),
+		Version:          "0.1-pre-alpha",
 		Favicon:          "/content/img/favicon.png",
 		ControllerMethod: controllerMethod,
 	}
@@ -54,6 +55,28 @@ func controlHandler(w http.ResponseWriter, r *http.Request) {
 
 func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	p := getDefaultPageData("settings")
+
+	if r.Method == "POST" {
+		r.ParseForm()
+		port, _ := strconv.Atoi(r.FormValue("http_port"))
+		ml1, _ := strconv.Atoi(r.FormValue("motor_left_1"))
+		ml2, _ := strconv.Atoi(r.FormValue("motor_left_2"))
+		mr1, _ := strconv.Atoi(r.FormValue("motor_right_1"))
+		mr2, _ := strconv.Atoi(r.FormValue("motor_right_2"))
+
+		settings := pibot.Settings{
+			HTTPPort:    port,
+			MotorLeft1:  ml1,
+			MotorLeft2:  ml2,
+			MotorRight1: mr1,
+			MotorRight2: mr2,
+		}
+
+		settings.Save()
+	}
+
+	settings := pibot.GetSettings()
+	p.Data = settings
 
 	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"settings.html"))
 	templates.ExecuteTemplate(w, "layout", p)
