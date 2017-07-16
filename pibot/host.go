@@ -24,10 +24,10 @@ type Info struct {
 
 // Metric represents a single instance in time of system info
 type Metric struct {
-	Created       time.Time
-	Load          float64
-	MemoryUsed    uint64
-	MemoryPercent float64
+	Created       time.Time `json:"created"`
+	Load          float64   `json:"load"`
+	MemoryUsed    uint64    `json:"memoryUsed"`
+	MemoryPercent float64   `json:"memoryPercent"`
 }
 
 // GetInfo will return the pre populated Info struct.

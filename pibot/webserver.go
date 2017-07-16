@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -59,7 +60,8 @@ func overviewHandler(w http.ResponseWriter, r *http.Request) {
 		CPUCount int
 	}
 
-	metrics := GetHostMetrics(360, "desc") // Last 1 hour with metric every 10 seconds
+	startTime := time.Now().Add(-1 * time.Hour).Format(time.RFC3339)
+	metrics := GetHostMetricsByTime(startTime, nil)
 	info := GetHostInfo()
 
 	p.Data = data{

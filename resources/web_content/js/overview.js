@@ -3,6 +3,15 @@ $(document).ready(function() {
     $.getJSON("/api/host", function(data) {
         setHostInfo(data);
     });
+
+    $.getJSON("/api/host", function(data) {
+        var cpuCount = data.processors.length;
+
+        updateGraphData();
+        $.getJSON("/api/metrics", function(data) {
+            setGraphData(data);
+        });
+    });
 });
 
 var setHostInfo = function(data) {
@@ -14,6 +23,24 @@ var setHostInfo = function(data) {
     $("#overview_processor").text(data.processors[0].modelName);
 }
 
+var setGraphData = function(data) {
+    var chartLabels = [];
+    var loadData = [];
+    var memoryData = [];
+
+    $.each(data, function(index, metric) {
+        var time = moment(metric.created).format("HH:mm:ss")
+        chartLabels.push(time);
+        loadData.push(parseFloat((metric.load / cpuCount) * 100).toFixed(2));
+        memoryData.push(parseFloat(metric.memoryPercent).toFixed(2));
+    });
+
+    metricsChart.data.labels = chartLabels;
+    metricsChart.data.datasets[0].data = loadData;
+    metricsChart.data.datasets[1].data = memoryData;
+    metricsChart.update();
+}
+
 var updateHostInfo = function() {
     setTimeout(function() {
         $.getJSON("/api/host", function(data) {
@@ -21,7 +48,16 @@ var updateHostInfo = function() {
             updateHostInfo();
         });
     }, 10000)
-};
+}
+
+var updateGraphData = function() {
+    setTimeout(function() {
+        $.getJSON("/api/metrics", function(data) {
+            setGraphData(data);
+            updateGraphData();
+        });
+    }, 10000)
+}
 
 var getMemory = function(bytes) {
     var thresh = 1000;

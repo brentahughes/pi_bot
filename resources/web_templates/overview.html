@@ -60,19 +60,19 @@
     {{range .Data.Metrics}}
         var time = moment({{.Created}}).format("HH:mm:ss")
         chartLabels.push(time);
-        loadData.push(parseFloat({{.Load}} / cpuCount).toFixed(2));
-        memoryData.push(parseFloat({{.MemoryPercent}} / 100).toFixed(2));
+        loadData.push(parseFloat(({{.Load}} / cpuCount) * 100).toFixed(2));
+        memoryData.push(parseFloat({{.MemoryPercent}}).toFixed(2));
     {{end}}
 
     var ctx = document.getElementById("hostMetricsChart").getContext('2d');
-    var myChart = new Chart(ctx, {
+    var metricsChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: chartLabels.reverse(),
             datasets: [
                 {
                     label: "CPU",
-                    data: loadData.reverse(),
+                    data: loadData,
                     backgroundColor: "rgba(180, 215, 235, 0.5)",
                     borderColor: "rgba(120,170,170, 1)",
                     borderWidth: 1,
@@ -81,7 +81,7 @@
                 },
                 {
                     label: "Memory",
-                    data: memoryData.reverse(),
+                    data: memoryData,
                     backgroundColor: "rgba(214, 125, 66, 0.2)",
                     borderColor: "rgba(150, 100, 60, 1)",
                     borderWidth: 1,
@@ -108,18 +108,13 @@
                     scaleLabel: {
                         display: true,
                         labelString: "Seconds"
-                    },
-                    ticks: {
-                        callback: function(value, index, values) {
-                            if (index % 4 != 0) {
-                                return '';
-                            }
-
-                            return value;
-                        }
                     }
                 }],
                 yAxes: [{
+                    ticks: {
+                        suggestedMax: 100,
+                        suggestedMin: 0
+                    },
                     scaleLabel: {
                         display: true,
                         labelString: "Percent"

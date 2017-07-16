@@ -3,6 +3,7 @@ package pibot
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,10 @@ func RegisterAPI(r *mux.Router) {
 	// Settings
 	sr.Handle("/settings", setupAPICall(http.HandlerFunc(apiSettingsHandler))).Methods("GET")
 	sr.Handle("/settings", setupAPICall(http.HandlerFunc(notAllowed))).Methods("POST", "PUT", "PATCH", "DELETE")
+
+	// Settings
+	sr.Handle("/metrics", setupAPICall(http.HandlerFunc(metricsHandler))).Methods("GET")
+	sr.Handle("/metrics", setupAPICall(http.HandlerFunc(notAllowed))).Methods("POST", "PUT", "PATCH", "DELETE")
 
 }
 
@@ -62,6 +67,19 @@ func hostHandler(w http.ResponseWriter, r *http.Request) {
 func apiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	settings := GetSettings()
 	outgoingJSON, err := json.Marshal(settings)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(outgoingJSON)
+}
+
+func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now().Add(-1 * time.Hour).Format(time.RFC3339)
+	metrics := GetHostMetricsByTime(startTime, nil)
+
+	outgoingJSON, err := json.Marshal(metrics)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
