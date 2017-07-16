@@ -54,6 +54,19 @@ func getDefaultPageData(controllerMethod string) page {
 func overviewHandler(w http.ResponseWriter, r *http.Request) {
 	p := getDefaultPageData("overview")
 
+	type data struct {
+		Metrics  []Metric
+		CPUCount int
+	}
+
+	metrics := GetHostMetrics(360, "desc") // Last 1 hour with metric every 10 seconds
+	info := GetHostInfo()
+
+	p.Data = data{
+		Metrics:  metrics,
+		CPUCount: len(info.Processors),
+	}
+
 	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"overview.html"))
 	templates.ExecuteTemplate(w, "layout", p)
 }

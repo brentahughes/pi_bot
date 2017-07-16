@@ -1,6 +1,7 @@
 package pibot
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"strconv"
@@ -74,12 +75,64 @@ func (c *Client) Delete(key string) error {
 }
 
 // Get returns a value of the provided key in the currently set bucket
-func (c *Client) Get(key string) string {
-	var result string
+func (c *Client) Get(key string) (result string) {
 	c.connection.View(func(tx *bolt.Tx) error {
 		result = string(tx.Bucket([]byte(c.bucket)).Get([]byte(key)))
 		return nil
 	})
 
 	return result
+}
+
+// GetTimeSeriesList returns the cursor for iterating over all values of a bucket
+func (c *Client) GetTimeSeriesList(startTime, endTime interface{}) (results []string) {
+	c.connection.View(func(tx *bolt.Tx) error {
+		cursor := tx.Bucket([]byte(c.bucket)).Cursor()
+
+		var min, max []byte
+
+		if startTime == nil {
+			min = []byte("1900-01-01T00:00:00Z")
+		} else {
+			min = []byte(startTime.(string))
+		}
+
+		if endTime == nil {
+			max = []byte("2200-01-01T00:00:00Z")
+		} else {
+			max = []byte(endTime.(string))
+		}
+
+		for k, v := cursor.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = cursor.Next() {
+			results = append(results, string(v))
+		}
+
+		return nil
+	})
+
+	return results
+}
+
+// GetList returns the cursor for iterating over all values of a bucket
+func (c *Client) GetList(count int, direction string) (results []string) {
+	c.connection.View(func(tx *bolt.Tx) error {
+		cursor := tx.Bucket([]byte(c.bucket)).Cursor()
+
+		var i = 0
+		if direction == "asc" {
+			for k, v := cursor.First(); k != nil && i < count; k, v = cursor.Next() {
+				results = append(results, string(v))
+				i++
+			}
+		} else if direction == "desc" {
+			for k, v := cursor.Last(); k != nil && i < count; k, v = cursor.Prev() {
+				results = append(results, string(v))
+				i++
+			}
+		}
+
+		return nil
+	})
+
+	return results
 }

@@ -38,11 +38,96 @@
             <span id="overview_processor">&nbsp;</span>
         </div>
     </div>
+
+    <div class="row hidden-sm hidden-xs">
+        <canvas id="hostMetricsChart" height="100px"></canvas>
+    </div>
     <hr>
 </div>
 
 <div class="container-fluid">
     <h3>Bot Info</h3>
 </div>
+
+<script src="/content/js/moment.min.js"></script>
+<script src="/content/js/Chart.min.js"></script>
+<script>
+    var chartLabels = [];
+    var loadData = [];
+    var memoryData = [];
+    var cpuCount = {{.Data.CPUCount}};
+
+    {{range .Data.Metrics}}
+        var time = moment({{.Created}}).format("HH:mm:ss")
+        chartLabels.push(time);
+        loadData.push(parseFloat({{.Load}} / cpuCount).toFixed(2));
+        memoryData.push(parseFloat({{.MemoryPercent}} / 100).toFixed(2));
+    {{end}}
+
+    var ctx = document.getElementById("hostMetricsChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels.reverse(),
+            datasets: [
+                {
+                    label: "CPU",
+                    data: loadData.reverse(),
+                    backgroundColor: "rgba(180, 215, 235, 0.5)",
+                    borderColor: "rgba(120,170,170, 1)",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                },
+                {
+                    label: "Memory",
+                    data: memoryData.reverse(),
+                    backgroundColor: "rgba(214, 125, 66, 0.2)",
+                    borderColor: "rgba(150, 100, 60, 1)",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                }
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Resources (1hr)"
+            },
+            legend: {
+                position: 'bottom'
+            },
+            layout: {
+                padding: {
+                    top: 25
+                }
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Seconds"
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            if (index % 4 != 0) {
+                                return '';
+                            }
+
+                            return value;
+                        }
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Percent"
+                    }
+                }]
+            }
+        }
+    });
+</script>
 
 {{ end }}

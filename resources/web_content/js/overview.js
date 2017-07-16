@@ -16,8 +16,6 @@ var setHostInfo = function(data) {
 
 var updateHostInfo = function() {
     setTimeout(function() {
-        console.log('here');
-
         $.getJSON("/api/host", function(data) {
             setHostInfo(data);
             updateHostInfo();
