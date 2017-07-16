@@ -136,3 +136,18 @@ func (c *Client) GetList(count int, direction string) (results []string) {
 
 	return results
 }
+
+// DeleteBefore delete all keys before a specified key in an ordered list
+func (c *Client) DeleteBefore(key string) (err error) {
+	c.connection.Update(func(tx *bolt.Tx) error {
+		cursor := tx.Bucket([]byte(c.bucket)).Cursor()
+
+		for k, _ := cursor.Seek([]byte(key)); k != nil; k, _ = cursor.Prev() {
+			err = tx.Bucket([]byte(c.bucket)).Delete(k)
+		}
+
+		return err
+	})
+
+	return err
+}

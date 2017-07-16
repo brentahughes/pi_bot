@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -54,20 +53,6 @@ func getDefaultPageData(controllerMethod string) page {
 
 func overviewHandler(w http.ResponseWriter, r *http.Request) {
 	p := getDefaultPageData("overview")
-
-	type data struct {
-		Metrics  []Metric
-		CPUCount int
-	}
-
-	startTime := time.Now().Add(-1 * time.Hour).Format(time.RFC3339)
-	metrics := GetHostMetricsByTime(startTime, nil)
-	info := GetHostInfo()
-
-	p.Data = data{
-		Metrics:  metrics,
-		CPUCount: len(info.Processors),
-	}
 
 	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"overview.html"))
 	templates.ExecuteTemplate(w, "layout", p)

@@ -88,6 +88,9 @@ func GetHostInfo() Info {
 	// Update the database
 	HostInfo.saveHostMetrics()
 
+	// Remove older metrics, starting form 6 hours ago
+	ClearOldMetrics()
+
 	return HostInfo
 }
 
@@ -112,6 +115,15 @@ func (i Info) saveHostMetrics() {
 	if err != nil {
 		log.Printf("Error saving metrics, %s", err)
 	}
+}
+
+// ClearOldMetrics will delete any metric that is older than 6 hours
+func ClearOldMetrics() {
+	db := GetDatabaseClient()
+	db.Open("metrics")
+	defer db.Close()
+
+	db.DeleteBefore(time.Now().Add(-6 * time.Hour).Format(time.RFC3339))
 }
 
 // GetHostMetricsByTime return slice of metrics based on given start and end time

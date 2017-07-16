@@ -1,3 +1,6 @@
+var cpuCount = 0;
+var metricsChart = 0;
+
 $(document).ready(function() {
     updateHostInfo();
     $.getJSON("/api/host", function(data) {
@@ -5,14 +8,59 @@ $(document).ready(function() {
     });
 
     $.getJSON("/api/host", function(data) {
-        var cpuCount = data.processors.length;
-
-        updateGraphData();
+        cpuCount = data.processors.length;
+        createGraph();
         $.getJSON("/api/metrics", function(data) {
             setGraphData(data);
         });
     });
 });
+
+var createGraph = function() {
+    var graphElement = document.getElementById("hostMetricsChart").getContext('2d');
+    metricsChart = new Chart(graphElement, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "CPU",
+                    data: [],
+                    backgroundColor: "rgba(180, 215, 235, 0.5)",
+                    borderColor: "rgba(120,170,170, 1)",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                },
+                {
+                    label: "Memory",
+                    data: [],
+                    backgroundColor: "rgba(214, 125, 66, 0.2)",
+                    borderColor: "rgba(150, 100, 60, 1)",
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    pointHitRadius: 10
+                }
+            ]
+        },
+        options: {
+            title: {display: true, text: "Resources (1hr)"},
+            legend: {position: 'bottom'},
+            layout: {padding: {top: 25}},
+            scales: {
+                xAxes: [{
+                    scaleLabel: { display: true, labelString: "Seconds"}
+                }],
+                yAxes: [{
+                    ticks: {suggestedMax: 100, suggestedMin: 0},
+                    scaleLabel: {display: true, labelString: "Percent"}
+                }]
+            }
+        }
+    });
+
+     updateGraphData();
+}
 
 var setHostInfo = function(data) {
     $("#overview_hostname").text(data.host.hostname);
