@@ -61,6 +61,5 @@ func GetSettings() *Settings {
 		settings = s
 	}
 
-	return s
-
+	return settings
 }
