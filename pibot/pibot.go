@@ -2,13 +2,15 @@ package pibot
 
 import (
 	"fmt"
-	"net"
 
+	"github.com/bah2830/pi_bot/pibot/host"
+	"github.com/bah2830/pi_bot/pibot/settings"
+	"github.com/bah2830/pi_bot/pibot/webserver"
 	"github.com/kidoman/embd"
-	_ "github.com/kidoman/embd/host/rpi" // Setup for the raspberry pi
+	// _ "github.com/kidoman/embd/host/rpi" // Setup for the raspberry pi
 )
 
-// Version is the global verison of the software
+// Version is the global version of the software
 var Version = "0.1-pre-alpha"
 
 var gpioPins pins
@@ -23,30 +25,15 @@ type pins struct {
 func Start() {
 	fmt.Println("Starting pi_bot")
 
-	StartHostPoller()
+	host.StartHostPoller()
 
 	// StartBot("demo")
 
-	printStartupDetails()
-	StartWebServer()
+	settings.PrintStartupDetails()
+	webserver.Start(Version)
 }
 
 // Stop shuts down any open channels
 func Stop() {
 	fmt.Println("Shutting down pi_bot")
-}
-
-func printStartupDetails() {
-	s := GetSettings()
-	addrs, err := net.InterfaceAddrs()
-	if err == nil {
-		for _, a := range addrs {
-			if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-				if ipnet.IP.To4() != nil {
-					fmt.Printf("Available at http://%s:%d\n", ipnet.IP.String(), s.HTTPPort)
-					return
-				}
-			}
-		}
-	}
 }

@@ -1,9 +1,12 @@
-package pibot
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/bah2830/pi_bot/pibot/host"
+	"github.com/bah2830/pi_bot/pibot/settings"
 
 	"github.com/gorilla/mux"
 )
@@ -53,7 +56,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func hostHandler(w http.ResponseWriter, r *http.Request) {
-	hostInfo := HostInfo
+	hostInfo := host.HostInfo
 
 	outgoingJSON, err := json.Marshal(hostInfo)
 	if err != nil {
@@ -65,7 +68,7 @@ func hostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func apiSettingsHandler(w http.ResponseWriter, r *http.Request) {
-	settings := GetSettings()
+	settings := settings.GetSettings()
 	outgoingJSON, err := json.Marshal(settings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -77,7 +80,7 @@ func apiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now().Add(-1 * time.Hour).Format(time.RFC3339)
-	metrics := GetHostMetricsByTime(startTime, nil)
+	metrics := host.GetHostMetricsByTime(startTime, nil)
 
 	outgoingJSON, err := json.Marshal(metrics)
 	if err != nil {

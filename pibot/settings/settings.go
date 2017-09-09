@@ -1,8 +1,12 @@
-package pibot
+package settings
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"net"
+
+	"github.com/bah2830/pi_bot/pibot/database"
 )
 
 var settings *Settings
@@ -18,7 +22,7 @@ type Settings struct {
 
 // Save stores the settings in the database
 func (s *Settings) Save() {
-	db := GetDatabaseClient()
+	db := database.GetDatabaseClient()
 	db.Open("settings")
 	defer db.Close()
 
@@ -41,7 +45,7 @@ func GetSettings() *Settings {
 		return settings
 	}
 
-	db := GetDatabaseClient()
+	db := database.GetDatabaseClient()
 	db.Open("settings")
 	defer db.Close()
 
@@ -62,4 +66,20 @@ func GetSettings() *Settings {
 	}
 
 	return settings
+}
+
+// PrintStartupDetails sends starupt info to stdout
+func PrintStartupDetails() {
+	s := GetSettings()
+	addrs, err := net.InterfaceAddrs()
+	if err == nil {
+		for _, a := range addrs {
+			if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+				if ipnet.IP.To4() != nil {
+					fmt.Printf("Available at http://%s:%d\n", ipnet.IP.String(), s.HTTPPort)
+					return
+				}
+			}
+		}
+	}
 }

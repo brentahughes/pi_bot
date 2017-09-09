@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bah2830/pi_bot/pibot/settings"
 	"github.com/kidoman/embd"
 )
 
@@ -33,7 +34,7 @@ func StopBot() {
 }
 
 func loadConfiguration() {
-	s := GetSettings()
+	s := settings.GetSettings()
 	motorLeftPins = s.MotorLeft
 	motorRightPins = s.MotorRight
 }

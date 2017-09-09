@@ -26,20 +26,20 @@ var createGraph = function() {
                 {
                     label: "CPU",
                     data: [],
-                    backgroundColor: "rgba(180, 215, 235, 0.5)",
+                    backgroundColor: "rgba(180, 215, 235, 0.2)",
                     borderColor: "rgba(120,170,170, 1)",
-                    borderWidth: 1,
+                    borderWidth: 2,
                     pointRadius: 0,
-                    pointHitRadius: 10
+                    pointHitRadius: 1
                 },
                 {
                     label: "Memory",
                     data: [],
-                    backgroundColor: "rgba(214, 125, 66, 0.2)",
+                    backgroundColor: "rgba(214, 125, 66, 0.1)",
                     borderColor: "rgba(150, 100, 60, 1)",
-                    borderWidth: 1,
+                    borderWidth: 2,
                     pointRadius: 0,
-                    pointHitRadius: 10
+                    pointHitRadius: 1
                 }
             ]
         },

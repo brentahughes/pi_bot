@@ -1,4 +1,4 @@
-package pibot
+package webserver
 
 import (
 	"fmt"
@@ -7,10 +7,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/bah2830/pi_bot/pibot/api"
+	"github.com/bah2830/pi_bot/pibot/settings"
 	"github.com/gorilla/mux"
 )
 
-var templatePath = "resources/web_templates/"
+var (
+	templatePath = "resources/web_templates/"
+	version      string
+)
 
 type page struct {
 	Title            string
@@ -20,13 +25,15 @@ type page struct {
 	Data             interface{}
 }
 
-// StartWebServer serves the main web endpoints
-func StartWebServer() {
+// Start serves the main web endpoints
+func Start(v string) {
+	version = v
+
 	r := mux.NewRouter()
 	registerDashboard(r)
-	RegisterAPI(r)
+	api.RegisterAPI(r)
 
-	s := GetSettings()
+	s := settings.GetSettings()
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", s.HTTPPort), r))
 }
@@ -45,7 +52,7 @@ func registerDashboard(r *mux.Router) {
 func getDefaultPageData(controllerMethod string) page {
 	return page{
 		Title:            "PiBot",
-		Version:          Version,
+		Version:          version,
 		Favicon:          "/content/img/favicon.png",
 		ControllerMethod: controllerMethod,
 	}
@@ -80,7 +87,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		sb1, _ := strconv.Atoi(r.FormValue("sensor_back_1"))
 		sb2, _ := strconv.Atoi(r.FormValue("sensor_back_2"))
 
-		settings := Settings{
+		settings := settings.Settings{
 			HTTPPort:    port,
 			MotorLeft:   [2]int{ml1, ml2},
 			MotorRight:  [2]int{mr1, mr2},
@@ -91,7 +98,7 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 		settings.Save()
 	}
 
-	settings := GetSettings()
+	settings := settings.GetSettings()
 	p.Data = settings
 
 	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"settings.html"))

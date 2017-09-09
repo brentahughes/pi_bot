@@ -1,10 +1,11 @@
-package pibot
+package host
 
 import (
 	"encoding/json"
 	"log"
 	"time"
 
+	"github.com/bah2830/pi_bot/pibot/database"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
@@ -47,6 +48,9 @@ func StartHostPoller() {
 		GetHostInfo()
 		for range ticker.C {
 			GetHostInfo()
+
+			// Remove older metrics, starting form 6 hours ago
+			ClearOldMetrics()
 		}
 	}()
 }
@@ -86,16 +90,13 @@ func GetHostInfo() Info {
 	}
 
 	// Update the database
-	HostInfo.saveHostMetrics()
-
-	// Remove older metrics, starting form 6 hours ago
-	ClearOldMetrics()
+	HostInfo.save()
 
 	return HostInfo
 }
 
-func (i Info) saveHostMetrics() {
-	db := GetDatabaseClient()
+func (i Info) save() {
+	db := database.GetDatabaseClient()
 	db.Open("metrics")
 	defer db.Close()
 
@@ -119,16 +120,16 @@ func (i Info) saveHostMetrics() {
 
 // ClearOldMetrics will delete any metric that is older than 6 hours
 func ClearOldMetrics() {
-	db := GetDatabaseClient()
+	db := database.GetDatabaseClient()
 	db.Open("metrics")
 	defer db.Close()
 
-	db.DeleteBefore(time.Now().Add(-6 * time.Hour).Format(time.RFC3339))
+	db.DeleteBefore(time.Now().Add(-2 * time.Hour).Format(time.RFC3339))
 }
 
 // GetHostMetricsByTime return slice of metrics based on given start and end time
 func GetHostMetricsByTime(startTime interface{}, endTime interface{}) (m []Metric) {
-	db := GetDatabaseClient()
+	db := database.GetDatabaseClient()
 	db.Open("metrics")
 	defer db.Close()
 
@@ -143,7 +144,7 @@ func GetHostMetricsByTime(startTime interface{}, endTime interface{}) (m []Metri
 
 // GetHostMetrics return slice of metrics based on given start and end time
 func GetHostMetrics(count int, direction string) (m []Metric) {
-	db := GetDatabaseClient()
+	db := database.GetDatabaseClient()
 	db.Open("metrics")
 	defer db.Close()
 
