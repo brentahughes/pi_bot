@@ -22,3 +22,16 @@ Stop the bot on the remote host
 ```
 make remote_kill
 ```
+
+
+## Building and Wiring
+
+### Shopping List
+
+Part | Amount
+---- | ------
+IR Proximity Sensor | 4
+DC Motor with Tire | 4
+Raspberry Pi Zero | 1
+L298N Motor Controller | 1
+Micro USB | 1
