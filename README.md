@@ -5,6 +5,7 @@
 # pi_bot
 Remote controlled and autonomous bot written in golang using the EMBD framework
 
+![Screenshot_1](https://raw.githubusercontent.com/bah2830/pi_bot/master/images/screenshot_overview.png)
 
 ## Debugging on remote raspberry pi
 
@@ -26,8 +27,11 @@ make remote_kill
 
 ## Building and Wiring
 
-### Shopping List
+### Wiring
+![wiring](https://raw.githubusercontent.com/bah2830/pi_bot/master/images/wire_diagram.png)
 
+
+### Shopping List
 Part | Amount
 ---- | ------
 IR Proximity Sensor | 4
