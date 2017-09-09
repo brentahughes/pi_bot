@@ -6,7 +6,7 @@ PI_PATH := /home/pi/pibot/
 
 SSH_BASE_CMD = $(PI_USER)@$(PI_ADDR)
 
-remote_debug: build remote_kill upload remote_run
+remote_deploy: build remote_kill upload remote_run
 
 upload:
 	chmod +x $(APP_NAME)

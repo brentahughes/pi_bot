@@ -2,9 +2,10 @@ language: go
 
 go:
   - 1.8
+  - 1.9
 
 script:
   - go get
-  - go fmt ./...
-  - go fix ./...
+  - go get golang.org/x/tools/cmd/goimport
+  - goimports -l ./
   - go build main.go
