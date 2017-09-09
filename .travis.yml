@@ -3,10 +3,8 @@ language: go
 go:
   - master
 
-install:
-  - go get
-  - go get golang.org/x/tools/cmd/goimport
-
 script:
-  - goimports -l ./
+  - go get
+  - go fmt ./...
+  - go fix ./...
   - go build main.go
