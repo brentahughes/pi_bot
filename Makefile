@@ -1,18 +1,17 @@
 APP_NAME := pi_bot
-HTTP_PORT := 8888
 PI_USER := pi
-PI_ADDR := 192.168.1.199
+PI_ADDR := 192.168.1.198
 PI_PATH := /home/pi/pibot/
 
 SSH_BASE_CMD = $(PI_USER)@$(PI_ADDR)
 
-remote_deploy: build remote_kill upload remote_run
+remote_deploy: build upload remote_run
 
 upload:
 	chmod +x $(APP_NAME)
 	rsync -avze ssh $(APP_NAME) resources $(SSH_BASE_CMD):$(PI_PATH)
 
-remote_run:
+remote_run: remote_kill
 	ssh $(SSH_BASE_CMD) "cd $(PI_PATH) && sudo ./$(APP_NAME)"
 
 remote_kill:

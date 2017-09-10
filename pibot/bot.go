@@ -8,14 +8,17 @@ import (
 	"github.com/kidoman/embd"
 )
 
+var (
+	mLeft  *Motor
+	mRight *Motor
+)
+
 // StartBot runs the pibot in the diseried mode. This includes setting up the gpio pins.
 func StartBot(mode string) {
 	embd.InitGPIO()
 	defer embd.CloseGPIO()
 
-	loadConfiguration()
-
-	setupPins()
+	setupMotors()
 
 	switch mode {
 	case "demo":
@@ -27,65 +30,37 @@ func StartBot(mode string) {
 
 // StopBot sets all pins to low to stop the motors. Used during a SIGTERM
 func StopBot() {
-	gpioPins.left1.Write(embd.Low)
-	gpioPins.left2.Write(embd.Low)
-	gpioPins.right1.Write(embd.Low)
-	gpioPins.right2.Write(embd.Low)
+	mLeft.Stop()
+	mRight.Stop()
 }
 
-func loadConfiguration() {
-	s := settings.GetSettings()
-	motorLeftPins = s.MotorLeft
-	motorRightPins = s.MotorRight
-}
-
-func setupPins() {
+func setupMotors() {
 	fmt.Println("Setting up pins for motor control")
 
-	var err error
-
-	gpioPins.left1, err = embd.NewDigitalPin(motorLeftPins[0])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.left2, err = embd.NewDigitalPin(motorLeftPins[1])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.right1, err = embd.NewDigitalPin(motorRightPins[0])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.right2, err = embd.NewDigitalPin(motorRightPins[1])
-	if err != nil {
-		panic(err)
-	}
-
-	gpioPins.left1.SetDirection(embd.Out)
-	gpioPins.left2.SetDirection(embd.Out)
-	gpioPins.right1.SetDirection(embd.Out)
-	gpioPins.right2.SetDirection(embd.Out)
+	s := settings.GetSettings()
+	mLeft = NewMotor("Left", s.MotorLeft)
+	mRight = NewMotor("Right", s.MotorRight)
 }
 
 func runDemo() {
 	fmt.Println("Starting demo")
 
 	for {
-		gpioPins.left1.Write(embd.High)
-		gpioPins.left2.Write(embd.Low)
-		gpioPins.right1.Write(embd.High)
-		gpioPins.right2.Write(embd.Low)
-
+		Forward()
 		time.Sleep(2 * time.Second)
-
-		gpioPins.left1.Write(embd.Low)
-		gpioPins.left2.Write(embd.High)
-		gpioPins.right1.Write(embd.Low)
-		gpioPins.right2.Write(embd.High)
-
+		Reverse()
 		time.Sleep(2 * time.Second)
 	}
+}
+
+// Forward calls reverse on both motors for straight forward movement
+func Forward() {
+	mLeft.Forward()
+	mRight.Forward()
+}
+
+// Reverse calls reverse on both motors for straight backwards movement
+func Reverse() {
+	mLeft.Reverse()
+	mRight.Reverse()
 }
