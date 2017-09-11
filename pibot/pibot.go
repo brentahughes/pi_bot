@@ -1,7 +1,7 @@
 package pibot
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/bah2830/pi_bot/pibot/host"
 	"github.com/bah2830/pi_bot/pibot/settings"
@@ -14,19 +14,18 @@ var Version = "0.1-pre-alpha"
 
 // Start runs the main application
 func Start() {
-	fmt.Println("Starting pi_bot")
+	log.Println("Starting pi_bot")
 
 	host.StartHostPoller()
 
-	StartBot("demo")
+	go StartBot("default")
 
 	settings.PrintStartupDetails()
 	webserver.Start(Version)
 }
 
-// Stop shuts down any open channels
-func Stop() {
-	fmt.Println("Shutting down pi_bot")
-
-	StopBot()
+// End shuts down any open channels
+func End() {
+	log.Println("Shutting down pi_bot")
+	Stop()
 }

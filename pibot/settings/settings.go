@@ -2,7 +2,6 @@ package settings
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net"
 
@@ -76,7 +75,7 @@ func PrintStartupDetails() {
 		for _, a := range addrs {
 			if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 				if ipnet.IP.To4() != nil {
-					fmt.Printf("Available at http://%s:%d\n", ipnet.IP.String(), s.HTTPPort)
+					log.Printf("Available at http://%s:%d\n", ipnet.IP.String(), s.HTTPPort)
 					return
 				}
 			}

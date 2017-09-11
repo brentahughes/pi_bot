@@ -10,7 +10,7 @@ import (
 
 func handleCtrlC(c chan os.Signal) {
 	<-c
-	pibot.Stop()
+	pibot.End()
 	os.Exit(0)
 }
 

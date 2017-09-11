@@ -1,7 +1,7 @@
 package pibot
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/bah2830/pi_bot/pibot/settings"
@@ -9,8 +9,12 @@ import (
 )
 
 var (
-	mLeft  *Motor
-	mRight *Motor
+	mLeft     *Motor
+	mRight    *Motor
+	pSensorFL *ProximitySensor
+	pSensorFR *ProximitySensor
+	pSensorBL *ProximitySensor
+	pSensorBR *ProximitySensor
 )
 
 // StartBot runs the pibot in the diseried mode. This includes setting up the gpio pins.
@@ -19,31 +23,54 @@ func StartBot(mode string) {
 	defer embd.CloseGPIO()
 
 	setupMotors()
+	setupProximitySensors()
 
 	switch mode {
 	case "demo":
 		runDemo()
+	case "default":
+		runDefault()
 	default:
-		fmt.Printf("PiBot mode %s unknown.\n", mode)
+		log.Printf("PiBot mode %s unknown.\n", mode)
 	}
 }
 
-// StopBot sets all pins to low to stop the motors. Used during a SIGTERM
-func StopBot() {
-	mLeft.Stop()
-	mRight.Stop()
+func setupProximitySensors() {
+	log.Println("Setting up proximity sensors")
+
+	s := settings.GetSettings()
+	pSensorFL = NewProximitySensor("Front Left", s.SensorFront[0])
+	pSensorFR = NewProximitySensor("Front Right", s.SensorFront[1])
+	pSensorBL = NewProximitySensor("Back Left", s.SensorBack[0])
+	pSensorBR = NewProximitySensor("Back Right", s.SensorBack[1])
 }
 
 func setupMotors() {
-	fmt.Println("Setting up pins for motor control")
+	log.Println("Setting up pins for motor control")
 
 	s := settings.GetSettings()
 	mLeft = NewMotor("Left", s.MotorLeft)
 	mRight = NewMotor("Right", s.MotorRight)
 }
 
+func runDefault() {
+	log.Println("Starting default operation mode")
+
+	for {
+		select {
+		case event := <-pSensorBR.Trigger:
+			if event == true {
+				Stop()
+				continue
+			}
+			Forward()
+		default:
+		}
+	}
+}
+
 func runDemo() {
-	fmt.Println("Starting demo")
+	log.Println("Starting demo")
 
 	for {
 		Forward()
@@ -63,4 +90,10 @@ func Forward() {
 func Reverse() {
 	mLeft.Reverse()
 	mRight.Reverse()
+}
+
+// Stop sets all pins to low to stop the motors.
+func Stop() {
+	mLeft.Stop()
+	mRight.Stop()
 }
