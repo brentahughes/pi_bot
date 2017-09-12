@@ -3,6 +3,7 @@ package pibot
 import (
 	"log"
 
+	"github.com/bah2830/pi_bot/pibot/settings"
 	"github.com/kidoman/embd"
 )
 
@@ -13,17 +14,17 @@ type Motor struct {
 }
 
 // NewMotor builds a motor struct and sets up the GPIO for control.
-func NewMotor(name string, pins [2]int) *Motor {
+func NewMotor(name string, motorSetting settings.MotorSetting) *Motor {
 	motor := &Motor{Name: name}
 
 	var err error
 
-	motor.Pins[0], err = embd.NewDigitalPin(pins[0])
+	motor.Pins[0], err = embd.NewDigitalPin(motorSetting.Pins[0])
 	if err != nil {
 		log.Fatalf("Error setting up %s control pins. %s", motor.Name, err)
 	}
 
-	motor.Pins[1], err = embd.NewDigitalPin(pins[1])
+	motor.Pins[1], err = embd.NewDigitalPin(motorSetting.Pins[1])
 	if err != nil {
 		log.Fatalf("Error setting up %s control pins. %s", motor.Name, err)
 	}

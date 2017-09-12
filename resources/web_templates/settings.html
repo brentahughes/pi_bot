@@ -47,28 +47,17 @@
                 <h4>Motor GPIO Pins</h4>
                 <table class="table table-motor-settings">
                     <tbody>
-                        <tr>
-                            <td>Right</td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="motor_left_1"
-                                    required value="{{index .Data.MotorLeft 0}}">
-                            </td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="motor_left_2"
-                                    required value="{{index .Data.MotorLeft 1}}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Left</td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="motor_right_1"
-                                required value="{{index .Data.MotorRight 0}}">
-                            </td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="motor_right_2"
-                                    required value="{{index .Data.MotorRight 1}}">
-                            </td>
-                        </tr>
+                        {{ range $name, $motor := .Data.Motors }}
+                            <tr>
+                                <td>{{ $name | ToUpper }}</td>
+                                {{ range $i, $pin := $motor.Pins}}
+                                    <td align="center">
+                                        <input type="number" class="form-control settings-input-pin" name="motor_{{ $name }}_{{ $i }}"
+                                            required value="{{ $pin }}">
+                                    </td>
+                                {{ end }}
+                            </tr>
+                        {{ end }}
                     </tbody>
                 </table>
             </div>
@@ -77,28 +66,15 @@
                 <h4>Sensor GPIO Pins</h4>
                 <table class="table table-motor-settings">
                     <tbody>
-                        <tr>
-                            <td>Front</td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="sensor_front_1"
-                                    required value="{{index .Data.SensorFront 0}}">
-                            </td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="sensor_front_2"
-                                    required value="{{index .Data.SensorFront 1}}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Back</td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="sensor_back_1"
-                                    required value="{{index .Data.SensorBack 0}}">
-                            </td>
-                            <td align="center">
-                                <input type="number" class="form-control settings-input-pin" name="sensor_back_2"
-                                    required value="{{index .Data.SensorBack 1}}">
-                            </td>
-                        </tr>
+                        {{ range $name, $pin := .Data.Sensors }}
+                            <tr>
+                                <td>{{ Replace $name "_" " " 1 | ToUpper }}</td>
+                                <td align="right">
+                                    <input type="number" class="form-control settings-input-pin" name="sensor_{{ $name }}"
+                                        required value="{{ $pin }}">
+                                </td>
+                            </tr>
+                        {{ end }}
                     </tbody>
                 </table>
             </div>

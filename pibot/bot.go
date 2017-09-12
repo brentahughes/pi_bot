@@ -39,18 +39,18 @@ func setupProximitySensors() {
 	log.Println("Setting up proximity sensors")
 
 	s := settings.GetSettings()
-	pSensorFL = NewProximitySensor("Front Left", s.SensorFront[0])
-	pSensorFR = NewProximitySensor("Front Right", s.SensorFront[1])
-	pSensorBL = NewProximitySensor("Back Left", s.SensorBack[0])
-	pSensorBR = NewProximitySensor("Back Right", s.SensorBack[1])
+	pSensorFL = NewProximitySensor("Front Left", s.Sensors["front_left"])
+	pSensorFR = NewProximitySensor("Front Right", s.Sensors["front_right"])
+	pSensorBL = NewProximitySensor("Back Left", s.Sensors["back_left"])
+	pSensorBR = NewProximitySensor("Back Right", s.Sensors["back_right"])
 }
 
 func setupMotors() {
 	log.Println("Setting up pins for motor control")
 
 	s := settings.GetSettings()
-	mLeft = NewMotor("Left", s.MotorLeft)
-	mRight = NewMotor("Right", s.MotorRight)
+	mLeft = NewMotor("Left", s.Motors["left"])
+	mRight = NewMotor("Right", s.Motors["right"])
 }
 
 func runDefault() {

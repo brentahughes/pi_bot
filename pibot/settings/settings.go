@@ -12,11 +12,22 @@ var settings *Settings
 
 // Settings is the settings for the whole bot
 type Settings struct {
-	HTTPPort    int    `json:"httpPort"`
-	MotorLeft   [2]int `json:"motorLeft"`
-	MotorRight  [2]int `json:"motorRight"`
-	SensorFront [2]int `json:"sensorFront"`
-	SensorBack  [2]int `json:"sensorBack"`
+	HTTPPort  int                     `json:"httpPort"`
+	Motors    map[string]MotorSetting `json:"motors"`
+	Sensors   map[string]int          `json:"sensors"`
+	I2CBoards []I2CBoardSetting       `json:"i2c_boards"`
+}
+
+// MotorSetting is the settings for the motor controller for each output
+type MotorSetting struct {
+	I2CBoardID string `json:"i2c_board_name"`
+	Pins       []int  `json:"pins"`
+}
+
+// I2CBoardSetting is the settings for the i2c pwm modules
+type I2CBoardSetting struct {
+	ID      string `json:"id"`
+	Address byte   `json:"address"`
 }
 
 // Save stores the settings in the database
@@ -54,11 +65,26 @@ func GetSettings() *Settings {
 	// Default the values
 	if s == nil {
 		settings = &Settings{
-			HTTPPort:    8888,
-			MotorLeft:   [2]int{6, 13},
-			MotorRight:  [2]int{19, 26},
-			SensorFront: [2]int{12, 16},
-			SensorBack:  [2]int{20, 21},
+			HTTPPort: 8888,
+			Motors: map[string]MotorSetting{
+				"left": MotorSetting{
+					I2CBoardID: "main",
+					Pins:       []int{6, 13},
+				},
+				"right": MotorSetting{
+					I2CBoardID: "main",
+					Pins:       []int{19, 26},
+				},
+			},
+			Sensors: map[string]int{
+				"front_left":  12,
+				"front_right": 16,
+				"back_left":   20,
+				"back_right":  21,
+			},
+			I2CBoards: []I2CBoardSetting{
+				I2CBoardSetting{ID: "main", Address: 0x40},
+			},
 		}
 	} else {
 		settings = s

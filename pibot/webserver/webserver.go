@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/bah2830/pi_bot/pibot/api"
 	"github.com/bah2830/pi_bot/pibot/settings"
@@ -78,21 +79,33 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
 		port, _ := strconv.Atoi(r.FormValue("http_port"))
-		ml1, _ := strconv.Atoi(r.FormValue("motor_left_1"))
-		ml2, _ := strconv.Atoi(r.FormValue("motor_left_2"))
-		mr1, _ := strconv.Atoi(r.FormValue("motor_right_1"))
-		mr2, _ := strconv.Atoi(r.FormValue("motor_right_2"))
-		sf1, _ := strconv.Atoi(r.FormValue("sensor_front_1"))
-		sf2, _ := strconv.Atoi(r.FormValue("sensor_front_2"))
-		sb1, _ := strconv.Atoi(r.FormValue("sensor_back_1"))
-		sb2, _ := strconv.Atoi(r.FormValue("sensor_back_2"))
+		ml1, _ := strconv.Atoi(r.FormValue("motor_left_0"))
+		ml2, _ := strconv.Atoi(r.FormValue("motor_left_1"))
+		mr1, _ := strconv.Atoi(r.FormValue("motor_right_0"))
+		mr2, _ := strconv.Atoi(r.FormValue("motor_right_1"))
+		sf1, _ := strconv.Atoi(r.FormValue("sensor_front_left"))
+		sf2, _ := strconv.Atoi(r.FormValue("sensor_front_right"))
+		sb1, _ := strconv.Atoi(r.FormValue("sensor_back_left"))
+		sb2, _ := strconv.Atoi(r.FormValue("sensor_back_right"))
 
 		settings := settings.Settings{
-			HTTPPort:    port,
-			MotorLeft:   [2]int{ml1, ml2},
-			MotorRight:  [2]int{mr1, mr2},
-			SensorFront: [2]int{sf1, sf2},
-			SensorBack:  [2]int{sb1, sb2},
+			HTTPPort: port,
+			Motors: map[string]settings.MotorSetting{
+				"left": settings.MotorSetting{
+					I2CBoardID: "main",
+					Pins:       []int{ml1, ml2},
+				},
+				"right": settings.MotorSetting{
+					I2CBoardID: "main",
+					Pins:       []int{mr1, mr2},
+				},
+			},
+			Sensors: map[string]int{
+				"front_left":  sf1,
+				"front_right": sf2,
+				"back_left":   sb1,
+				"back_right":  sb2,
+			},
 		}
 
 		settings.Save()
@@ -101,6 +114,16 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	settings := settings.GetSettings()
 	p.Data = settings
 
-	templates := template.Must(template.ParseFiles(templatePath+"layout.html", templatePath+"settings.html"))
+	funcMap := template.FuncMap{
+		"ToUpper": strings.Title,
+		"Replace": strings.Replace,
+	}
+
+	templates := template.Must(
+		template.New("").Funcs(funcMap).ParseFiles(
+			templatePath+"layout.html",
+			templatePath+"settings.html",
+		),
+	)
 	templates.ExecuteTemplate(w, "layout", p)
 }
